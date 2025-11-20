@@ -1,0 +1,21 @@
+#pragma once
+
+#define mdcraft_VERSION_MAJOR @mdcraft_VERSION_MAJOR@
+#define mdcraft_VERSION_MINOR @mdcraft_VERSION_MINOR@
+#define mdcraft_VERSION_PATCH @mdcraft_VERSION_PATCH@
+
+#cmakedefine mdcraft_ENABLE_MPI
+#cmakedefine mdcraft_ENABLE_MLIP4
+#cmakedefine mdcraft_ENABLE_BPNN
+#cmakedefine mdcraft_ENABLE_DeePMD
+#cmakedefine mdcraft_ENABLE_EIGEN
+#cmakedefine mdcraft_ENABLE_TBB
+#cmakedefine mdcraft_ENABLE_TESTS
+#cmakedefine mdcraft_ENABLE_PROBLEMS
+#cmakedefine mdcraft_ENABLE_PYTHON
+
+#ifdef mdcraft_ENABLE_MPI
+    #define if_mpi(...) __VA_ARGS__
+#else
+    #define if_mpi(...)
+#endif

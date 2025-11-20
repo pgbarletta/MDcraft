@@ -1,0 +1,18 @@
+get_filename_component(LIB ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+add_library(${PROJECT_NAME}-${LIB} INTERFACE)
+target_link_libraries(${PROJECT_NAME}-${LIB} INTERFACE Eigen3::Eigen)
+target_include_directories(${PROJECT_NAME}-${LIB} INTERFACE
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+)
+
+# install(TARGETS ${PROJECT_NAME}-${LIB}
+#     DESTINATION lib
+# )
+
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+install(FILES ${HEADERS}
+  DESTINATION include/${PROJECT_NAME}/${LIB}
+)

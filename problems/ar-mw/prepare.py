@@ -3,7 +3,7 @@ import h5py as hdf
 import matplotlib.pyplot as plt
 import math, sys, os, time as Time
 from mdcraft.tools import Threads
-threads = Threads(0)
+threads = Threads()
 # data 
 from mdcraft.data import Atoms
 # output
@@ -204,7 +204,6 @@ while step < NCsave:
 		save_file.close()
 		
 	if ICbuff == 0:
-		domain.fit_in_period(atoms)
 		nlist.update()
 
 logfile.close()

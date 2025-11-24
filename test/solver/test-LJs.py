@@ -2,7 +2,7 @@ import numpy as np
 import math, sys, os, time as Time
 import h5py as hdf
 from mdcraft.tools import Threads
-threads = Threads(6)
+threads = Threads()
 
 from mdcraft.io import PvdFile
 # data 
@@ -221,7 +221,6 @@ while step < NCsave:
 		save_file.close()
 		
 	if ICbuff == 0:
-		domain.fit_in_period(atoms)
 		nlist.update()
 
 logfile.close()

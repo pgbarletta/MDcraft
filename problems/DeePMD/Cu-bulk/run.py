@@ -206,7 +206,6 @@ while step < int(tend/dt):
  		save_file.close()
 
  	if ICbuff == 0:
- 		domain.fit_in_period(atoms)
  		nlist.update()
 
 logfile.close()

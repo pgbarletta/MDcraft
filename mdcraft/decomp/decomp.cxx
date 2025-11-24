@@ -50,6 +50,8 @@ void Decomp::set_measurer(const std::string& type) {
 }
 
 void Decomp::update(bool verbose) {
+    if (m_comm.single()) return;
+
     double load = m_locals.size();
     if (m_time_measurer) {
         load = useful.milliseconds();
@@ -72,11 +74,15 @@ void Decomp::update(bool verbose) {
 }
 
 void Decomp::exchange() {
+    if (m_comm.single()) return;
+
     exchange_start();
     exchange_end();
 }
 
 void Decomp::exchange_start() {
+    if (m_comm.single()) return;
+
     // Prepare array for border
     m_border.resize(m_router.send_buffer_size());
 
@@ -94,6 +100,8 @@ void Decomp::exchange_start() {
 }
 
 void Decomp::exchange_end() {
+    if (m_comm.single()) return;
+
     useful.stop(); // Stop waiting
 
     // Wait for the end of send/recv
@@ -104,6 +112,8 @@ void Decomp::exchange_end() {
 }
 
 void Decomp::exchange_migrants() {
+    if (m_comm.single()) return;
+
     // Step 1. Get new ranks, count for
     // number of particles to send
 
@@ -175,6 +185,8 @@ void Decomp::exchange_migrants() {
 }
 
 void Decomp::prepare_border() {
+    if (m_comm.single()) return;
+
     // Step 1. Evaluate the number to send
     // TODO: multithread version
     std::vector<size_t> send_count(m_comm.size(), 0);
@@ -215,6 +227,8 @@ void Decomp::prepare_border() {
 }
 
 void Decomp::redistribute() {
+    if (m_comm.single()) return;
+
     useful.stop();  // Stop timers
     elapsed.stop(); // do not account for redistribution
 
@@ -240,6 +254,8 @@ inline double imbalance(const std::vector<double>& loads) {
 }
 
 void Decomp::prebalancing(int n_iters, bool verbose) {
+    if (m_comm.single()) return;
+
     std::vector<size_t> count(m_comm.size());
     std::vector<double> loads(m_comm.size());
 
@@ -255,11 +271,13 @@ void Decomp::prebalancing(int n_iters, bool verbose) {
         for (int r = 0; r < m_comm.size(); ++r) {
             loads[r] = static_cast<double>(count[r]);
         }
+        double imb = imbalance(loads);
         if (verbose && m_comm.master()) {
             std::cout << std::fixed << std::setprecision(2);
             std::cout << "  Prebalancing " << k << " / " << n_iters
-                      << ". Imbalance: " << 100 * imbalance(loads) << "%\n";
+                      << ". Imbalance: " << 100 * imb << "%\n";
         }
+        if (imb < 0.005) return;
 
         balancing(loads);
         redistribute();

@@ -19,6 +19,10 @@ VerletList::VerletList(
 }
 
 void VerletList::update(double kbuf) {
+	if (m_neibs->empty()) {
+		clear_lists();
+		return;
+	}
 	if (kbuf > 0.0) optimize_search_radius(kbuf);
 	clear_lists();
 	put_atoms_in_cells(*m_neibs);
@@ -83,6 +87,11 @@ void VerletList::put_atoms_in_cells(Atoms& neibs) {
 
 	if (neibs.empty()) return;
 
+	pool.for_each(neibs.begin(), neibs.end(),
+		[domain=this->domain](Atom& atom) {
+			domain.fit_in_period(atom.r);
+		});
+
 	grid.build(neibs);
 	grid.set_indices(neibs, atoms_in_cells);
 
@@ -98,10 +107,10 @@ void VerletList::put_atoms_in_cells(Atoms& neibs) {
 
 void VerletList::find_cell_starts() {
 	auto find_one = [&](point_id i) {
-		if (atoms_in_cells[i].cell_id !=
-			atoms_in_cells[i - 1].cell_id) {
-			cell_start[atoms_in_cells[i].cell_id] = i;
-			cell_endin[atoms_in_cells[i].cell_id] = i;
+		if (atoms_in_cells[i].cell_id != atoms_in_cells[i - 1].cell_id) {
+			auto cell_id = atoms_in_cells[i].cell_id;
+			cell_start[cell_id] = i;
+			cell_endin[cell_id] = i;
 		}
 	};
 

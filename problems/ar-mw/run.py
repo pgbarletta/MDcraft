@@ -3,7 +3,7 @@ import h5py as hdf
 import matplotlib.pyplot as plt
 import math, sys, os, time as Time
 from mdcraft.tools import Threads
-threads = Threads(4)
+threads = Threads()
 # data 
 from mdcraft.data import Atoms
 # output
@@ -134,7 +134,7 @@ stepper = Stepper(
 nlist = VerletList(
 	atoms     = atoms,
 	neighbors = atoms,
-        domain    = domain,
+	domain    = domain,
 	threads   = threads
 )
 nlist.update()
@@ -273,5 +273,4 @@ while time < tend:
 		save_file.close()
 		
 	if ICbuff == 0:
-		domain.fit_in_period(atoms)
 		nlist.update()

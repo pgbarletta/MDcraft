@@ -85,7 +85,7 @@ public:
     /// @brief Collect global information from remote particles
     void collect_aliens_info() final;
 private:
-Domain&             m_domain;   ///< Computational domain
+    Domain&             m_domain;   ///< Computational domain
     std::vector<vector> m_centers;  ///< Diagram generators
     std::vector<double> m_weights;  ///< Diagram weights
     /// @brief Decomposition dimension {1, 2, 3}

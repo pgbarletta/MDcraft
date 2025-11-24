@@ -18,9 +18,53 @@ VD3::VD3(
 	m_growth_rate(opts.growth_rate) {
     if (centers.size() == m_comm.size()) { // use user initial positions
         m_centers = centers;
-    } else { // fill random within domain
+    }
+    else if (centers.empty() && m_comm.size() == 2) {
         m_centers.resize(m_comm.size());
-        m_weights.resize(m_comm.size());
+        vector c = {
+            0.5 * (m_domain.xmin() + m_domain.xmax()),
+            0.5 * (m_domain.ymin() + m_domain.ymax()),
+            0.5 * (m_domain.zmin() + m_domain.zmax())
+        };
+        vector dx = {0.25 * m_domain.xsize(), 0.0, 0.0};
+        m_centers[0] = c - 0.5 * dx;
+        m_centers[1] = c + 1.5 * dx;
+    }
+    else if (centers.empty() && m_comm.size() == 4 && m_dim > 1) {
+        m_centers.resize(m_comm.size());
+        vector c = {
+            0.5 * (m_domain.xmin() + m_domain.xmax()),
+            0.5 * (m_domain.ymin() + m_domain.ymax()),
+            0.5 * (m_domain.zmin() + m_domain.zmax())
+        };
+        vector dx = {0.25 * m_domain.xsize(), 0.0, 0.0};
+        vector dy = {0.0, 0.25 * m_domain.ysize(), 0.0};
+        m_centers[0] = c - dx - dy;
+        m_centers[1] = c + dx - dy;
+        m_centers[2] = c - dx + dy;
+        m_centers[3] = c + dx + dy;
+    }
+    else if (centers.empty() && m_comm.size() == 8 && m_dim > 2) {
+        m_centers.resize(m_comm.size());
+        vector c = {
+            0.5 * (m_domain.xmin() + m_domain.xmax()),
+            0.5 * (m_domain.ymin() + m_domain.ymax()),
+            0.5 * (m_domain.zmin() + m_domain.zmax())
+        };
+        vector dx = {0.25 * m_domain.xsize(), 0.0, 0.0};
+        vector dy = {0.0, 0.25 * m_domain.ysize(), 0.0};
+        vector dz = {0.0, 0.0, 0.25 * m_domain.zsize()};
+        m_centers[0] = c - dx - dy - dz;
+        m_centers[1] = c + dx - dy - dz;
+        m_centers[2] = c - dx + dy - dz;
+        m_centers[3] = c + dx + dy - dz;
+        m_centers[4] = c - dx - dy + dz;
+        m_centers[5] = c + dx - dy + dz;
+        m_centers[6] = c - dx + dy + dz;
+        m_centers[7] = c + dx + dy + dz;
+    }
+    else { // fill random within domain
+        m_centers.resize(m_comm.size());
 
         std::mt19937 gen(57391);
         std::uniform_real_distribution x(m_domain.xmin(), m_domain.xmax());
@@ -36,9 +80,9 @@ VD3::VD3(
             } while (!m_domain.belong(probe));
 
             m_centers[i] = probe;
-            m_weights[i] = 0.0;
         }
     }
+    m_weights.resize(m_comm.size(), 0.0);
 
     // init neibs
     m_neibs.resize(m_comm.size());

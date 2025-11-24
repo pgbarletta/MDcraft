@@ -196,7 +196,6 @@ while step < NCsave:
 		save_file.close()
 		
 	if ICbuff == 0:
-		domain.fit_in_period(atoms)
 		nlist.update()
 
 logfile.close()

@@ -82,3 +82,4 @@ protected:
     std::vector<size_t> m_send_recv;
 };
 } // namespace mdcraft::decomp
+
